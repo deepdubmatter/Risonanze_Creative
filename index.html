@@ -2,8 +2,9 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>INK / WAVE - Bio-Acoustic Sumi-e Monitor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#EFECE6">
+    <title>INK / WAVE - Bio-Acoustic Sumi-e Monitor, Acoustic Engine & Reverb</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,8 +15,11 @@
         :root {
             --paper-bg: #EFECE6;
             --ink-black: #141414;
-            --wave-teal: #0F5257;
+            --ink-medium: #3A3A3A;
+            --wave-cyan: #0F5257;
             --wave-emerald: #1B4D3E;
+            --wave-accent: #2C6E49;
+            --cinnabar: #C84B31;
         }
 
         body {
@@ -31,390 +35,398 @@
         .paper-texture {
             background-color: #EFECE6;
             background-image:
-                radial-gradient(hsla(0, 0%, 0%, 0.03) 1px, transparent 0),
-                radial-gradient(hsla(0, 0%, 0%, 0.015) 2px, transparent 0);
+                radial-gradient(hsla(0, 0%, 0%, 0.035) 1px, transparent 0),
+                radial-gradient(hsla(0, 0%, 0%, 0.02) 2px, transparent 0);
             background-size: 24px 24px, 40px 40px;
+        }
+
+        .sumi-card {
+            background: rgba(246, 244, 239, 0.88);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(20, 20, 20, 0.14);
+            box-shadow:
+                0 10px 30px -5px rgba(0, 0, 0, 0.08),
+                0 20px 25px -5px rgba(0, 0, 0, 0.04);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .sumi-card:hover {
+            border-color: rgba(20, 20, 20, 0.38);
+            box-shadow:
+                0 12px 30px -10px rgba(0, 0, 0, 0.12),
+                0 0 16px rgba(15, 82, 87, 0.15);
         }
 
         #wave-canvas {
             position: fixed;
-            top: 0; left: 0; width: 100vw; height: 100vh;
-            pointer-events: none; z-index: 5;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 5;
         }
 
         @keyframes plantSway {
-            0%, 100% { transform: rotate(0deg); }
-            50% { transform: rotate(1.2deg) translateY(-2px); }
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(1.4deg) translateY(-2px); }
+            100% { transform: rotate(0deg); }
         }
-        .plant-sway { animation: plantSway 6.5s infinite ease-in-out; transform-origin: bottom center; }
+        .plant-sway {
+            animation: plantSway 6.5s infinite ease-in-out;
+            transform-origin: bottom center;
+        }
 
         @keyframes acousticPulse {
             0% { transform: scale(0.85); opacity: 0.8; }
-            100% { transform: scale(1.35); opacity: 0; }
+            100% { transform: scale(1.4); opacity: 0; }
         }
-        .acoustic-ring { animation: acousticPulse 3s infinite cubic-bezier(0.2, 0.8, 0.2, 1); }
-
-        /* VISTA ESPLOSA 3D PERMANENTE */
-        .stage-3d {
-            perspective: 1200px;
+        .acoustic-ring {
+            animation: acousticPulse 3s infinite cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
-        .plant-layer-group {
-            transform-style: preserve-3d;
-            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-            transform: rotateX(22deg) rotateY(-18deg) rotateZ(4deg);
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.03); }
+        ::-webkit-scrollbar-thumb { background: rgba(20,20,20,0.25); border-radius: 3px; }
+
+        @media (min-width: 768px) { #plant-wrap { height: 480px !important; } }
+        .bio-slot { position: absolute; z-index: 25; pointer-events: none; width: 104px; }
+        #slot-cc { top: 4px; left: 50%; transform: translateX(-50%); width: 124px; }
+        #slot-chart { left: 50%; transform: translateX(-50%); bottom: 30px; width: min(94%, 340px); }
+        #slot-note { left: 2px; top: 50%; transform: translateY(-50%); }
+        #slot-light { right: 2px; top: 50%; transform: translateY(-50%); }
+        .bio-slot > .bio-card:not(.bio-restc) { opacity: 0; transition: opacity .25s; }
+        .bio-restc { position: absolute; inset: 0; opacity: .8; transition: opacity .25s; }
+        #plant-wrap.live .bio-slot > .bio-card:not(.bio-restc) { opacity: 1; }
+        #plant-wrap.live .bio-slot > .bio-restc, #plant-wrap.live #bio-hint { opacity: 0; }
+        .bio-card { background: rgba(246,244,239,0.88); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border: 1px solid rgba(0,0,0,0.1); border-radius: 10px; padding: 5px 8px; }
+        .bio-row { display: flex; justify-content: space-between; align-items: center; gap: 6px; }
+        .bio-t { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .07em; color: #525252; white-space: nowrap; }
+        .bio-s { font: 600 9px ui-monospace, monospace; color: #737373; white-space: nowrap; }
+        .bio-v { font: 700 18px/1.15 ui-monospace, monospace; color: #141414; margin-top: 1px; }
+        .bio-v.font-serif-acc { font-family: 'Cinzel', serif; font-size: 16px; }
+        .bio-bar { height: 5px; border-radius: 9px; background: rgba(0,0,0,0.12); overflow: hidden; margin-top: 4px; }
+        .bio-bar > div { height: 100%; transition: width .15s; }
+        .bio-h { font-size: 9px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; color: #0F5257; text-align: center; opacity: .8; }
+        /* ===== OTTIMIZZAZIONE SMARTPHONE ===== */
+        body { min-height: 100dvh; padding-left: env(safe-area-inset-left); padding-right: env(safe-area-inset-right); padding-bottom: env(safe-area-inset-bottom); }
+        #wave-canvas { height: 100dvh; }
+        button, select { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        @media (hover: none) { .sumi-card:hover { border-color: rgba(20,20,20,0.14); box-shadow: 0 10px 30px -5px rgba(0,0,0,0.08); } }
+        @media (max-width: 640px) {
+            header { padding: calc(env(safe-area-inset-top) + 8px) 12px 8px !important; gap: 8px; }
+            header h1 { font-size: 15px !important; }
+            header h1 span, header > div:first-child p { display: none; }
+            header > div:first-child > div:first-child { width: 34px; height: 34px; font-size: 16px; }
+            header > div:nth-child(2) { width: 100%; margin: 0 !important; }
+            header #midi-input-select { font-size: 16px; padding: 9px 8px; }
+            header button, #stage button { min-height: 40px; justify-content: center; }
+            main { padding-top: 10px !important; }
+            #stage { border-radius: 20px; padding: 10px !important; }
+            #plant-wrap { height: 430px !important; }
+            .bio-slot { width: 92px; } #slot-cc { width: 112px; } .bio-slot .bio-v { font-size: 16px; }
+            #aura-ring-1 { width: 170px !important; height: 170px !important; }
+            #aura-ring-2 { width: 225px !important; height: 225px !important; }
+            #aura-ring-3 { width: 280px !important; height: 280px !important; }
+            #plant-photo { width: min(60vw, 220px) !important; height: min(78vw, 290px) !important; }
+            #sumi-plant { width: min(76vw, 260px) !important; height: min(76vw, 260px) !important; }
+            #freq-val { font-size: 1.5rem !important; }
+            #bio-canvas { height: 56px !important; }
+            #controls-dock { padding-left: 10px; padding-right: 10px; margin: 12px auto; }
+            #controls-dock .sumi-card { padding: 12px !important; }
+            #controls-dock select { font-size: 16px; min-height: 40px; }
+            #controls-dock input[type=range] { height: 28px; }
+            #midi-badge-text { font-size: 9px; }
         }
 
-        .layer-item {
-            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+        /* Niente spazio distribuito tra header e contenuto */
+        body { justify-content: flex-start !important; }
+        main { padding-top: 8px !important; }
+        header { padding-bottom: 6px; }
+        /* ===== COMPATTO SMARTPHONE: tutto in una schermata, senza scorrere ===== */
+        @media (max-width: 640px) {
+            body { padding-bottom: calc(66px + env(safe-area-inset-bottom)) !important; }
+            header { flex-wrap: nowrap !important; padding: calc(env(safe-area-inset-top) + 6px) 10px 6px !important; gap: 8px !important; }
+            header > div:first-child { flex: none; }
+            header > div:first-child > div:last-child { display: none; }
+            #device-bar { width: auto !important; flex: 1 1 0; min-width: 0; }
+            main { padding-top: 4px !important; }
+            #stage { padding: 6px !important; border-radius: 16px; }
+            #stage > div.relative { gap: 6px !important; }
+            #stage > div.relative > p:last-child { display: none; }
+            #stage button { min-height: 32px !important; }
+            #plant-wrap { height: clamp(250px, calc(100dvh - 340px), 440px) !important; }
+            #plant-photo, #sumi-plant { max-height: 90%; }
+            #bio-sound .bio-h { display: none; }
+            #bio-sound > div { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 6px !important; }
+            #bio-sound .bio-card { grid-column: auto !important; padding: 4px 6px; }
+            #bio-sound .bio-v { font-size: 14px !important; }
+            #bio-sound .bio-v.font-serif-acc { font-size: 13px !important; }
+            #bio-sound .h-4, #bio-sound #midi-note-badge { display: none; }
+            #bio-sound .bio-s { font-size: 8px; white-space: normal; }
+            /* Strumenti e controlli: barra fissa in basso, si apre come pannello scorrevole */
+            #controls-dock { position: fixed !important; left: 0; right: 0; bottom: 0; margin: 0 !important; max-width: none; padding: 0 8px calc(env(safe-area-inset-bottom) + 6px) !important; }
+            #controls-dock .sumi-card { padding: 6px 12px !important; box-shadow: 0 -6px 24px rgba(0,0,0,.12); }
+            #controls-body { max-height: 58dvh; overflow-y: auto; -webkit-overflow-scrolling: touch; }
         }
 
-        #layer-aura { transform: translateZ(110px) scale(1.1); }
-        #layer-foliage { transform: translateZ(70px) translateY(-15px); filter: drop-shadow(0 15px 12px rgba(0,0,0,0.25)); }
-        #layer-stem { transform: translateZ(30px); }
-        #layer-pot { transform: translateZ(-30px) translateY(15px); opacity: 0.85; }
-        #layer-sensors { transform: translateZ(140px); opacity: 1 !important; }
-
-        /* CONTROLLI AUDIO */
-        .knob-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            cursor: ns-resize;
-            touch-action: none;
-        }
-
-        .analog-knob {
-            width: 42px;
-            height: 42px;
-            background: radial-gradient(circle, #444 0%, #111 80%);
-            border-radius: 50%;
-            border: 2px solid #222;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3), inset 0 1px 1px rgba(255,255,255,0.3);
-            position: relative;
-            touch-action: none;
-        }
-
-        .knob-indicator {
-            position: absolute;
-            top: 3px;
-            left: 50%;
-            transform-origin: 50% 18px;
-            width: 3px;
-            height: 10px;
-            background-color: #38BDF8;
-            border-radius: 2px;
-            box-shadow: 0 0 5px #38BDF8;
-            margin-left: -1.5px;
-            transform: rotate(-27deg);
-        }
-
-        .fader-track-container {
-            height: 70px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            touch-action: none;
-            cursor: ns-resize;
-        }
-
-        .fader-track {
-            width: 6px;
-            height: 60px;
-            background: #1C1917;
-            border-radius: 3px;
-            border: 1px solid rgba(0,0,0,0.1);
-            position: relative;
-        }
-
-        .fader-handle {
-            width: 24px;
-            height: 12px;
-            background: linear-gradient(180deg, #D4D4D4 0%, #737373 50%, #404040 100%);
-            border-radius: 3px;
-            border: 1px solid #000;
-            box-shadow: 0 3px 5px rgba(0,0,0,0.4);
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            cursor: grab;
-        }
-        .fader-handle:active { cursor: grabbing; }
-
-        .fader-line {
-            width: 100%;
-            height: 2px;
-            background: #DC2626;
-            margin-top: 5px;
-        }
+        /* ===== FOTO A TUTTO SCHERMO ===== */
+        #photo-bg { display: none; }
+        body.has-photo #photo-bg { display: block; position: fixed; inset: -28px; z-index: -2; pointer-events: none; background: var(--photo-avg, #111) center / cover no-repeat; filter: blur(26px) brightness(.82) saturate(1.1); }
+        body.has-photo #plant-photo { position: fixed !important; inset: 0; width: 100vw !important; height: 100vh !important; height: 100dvh !important; max-width: none !important; max-height: none !important; border: 0 !important; border-radius: 0 !important; box-shadow: none !important; z-index: -1; object-fit: contain; }
+        body.has-photo .plant-sway { animation: none !important; transform: none !important; }
+        body.has-photo #stage { background: transparent !important; border-color: transparent !important; box-shadow: none !important; }
+        body.has-photo #stage > svg, body.has-photo #stage > div.absolute, body.has-photo [id^="aura-ring"] { display: none !important; }
+        body.has-photo #stage > div.relative > div:first-child { background: rgba(246,244,239,.82); border-radius: 12px; padding: 4px 8px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
     </style>
 </head>
-<body class="paper-texture min-h-screen flex flex-col justify-between relative">
+<body class="paper-texture min-h-screen flex flex-col justify-between relative select-none">
+    <div id="photo-bg" aria-hidden="true"></div>
 
-    <!-- HEADER -->
-    <header class="relative z-50 w-full px-6 py-3 flex flex-wrap justify-between items-center border-b border-black/10 bg-stone-100/80 backdrop-blur-md">
+    <header class="relative z-50 w-full px-6 py-3 flex flex-wrap justify-between items-center border-b border-black/10 backdrop-blur-md bg-stone-100/80">
         <div class="flex items-center space-x-3">
-            <div class="w-9 h-9 rounded-full bg-neutral-900 flex items-center justify-center text-white font-serif-acc text-lg shadow">音</div>
+            <div class="w-10 h-10 rounded-full bg-neutral-900 flex items-center justify-center text-white font-serif-acc text-xl shadow-md border border-neutral-700">
+                音
+            </div>
             <div>
-                <h1 class="font-serif-acc font-bold tracking-wider text-base sm:text-lg text-neutral-900 leading-none flex items-center gap-2">
-                    SUMI-E BIO-MONITOR <span class="text-[10px] font-sans tracking-widest text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full uppercase">Exploded 3D</span>
+                <h1 class="font-serif-acc font-bold tracking-wider text-lg sm:text-xl text-neutral-900 leading-none flex items-center gap-2">
+                    SUMI-E BIO-ACUSTICA <span class="text-xs font-sans tracking-widest text-emerald-800 bg-emerald-100 px-2 py-0.5 rounded-full uppercase">Acoustic Instruments & Reverb Engine</span>
                 </h1>
-                <p class="text-[10px] text-neutral-500 font-medium">Risonanze Creative — Visualizzatore Dati Biometrici</p>
+                <p class="text-[11px] text-neutral-500 font-medium">Risonanze Creative - Cervello Sonoro Web Audio FX & Web MIDI</p>
             </div>
         </div>
 
-        <!-- MIDI Hardware Selector -->
-        <div class="flex items-center space-x-2 bg-stone-200/80 p-1 rounded-xl border border-black/10 my-2 sm:my-0">
-            <div class="flex items-center space-x-1.5 px-2">
-                <span id="midi-status-led" class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" title="In attesa di Web MIDI"></span>
-                <i class="fa-solid fa-plug text-xs text-neutral-700"></i>
-            </div>
-            <select id="midi-input-select" onchange="selectMIDIInput(this.value)" class="bg-stone-100 text-xs font-semibold text-neutral-800 py-1 px-2 rounded-lg border border-black/10 focus:outline-none max-w-[180px] truncate cursor-pointer">
+        <!-- Barra dispositivi: MIDI + foto pianta -->
+        <div id="device-bar" class="flex items-center gap-2 bg-stone-200/80 p-1.5 rounded-xl border border-black/10 shadow-inner my-2 sm:my-0 w-full sm:w-auto">
+            <span id="midi-status-led" class="w-3 h-3 ml-1.5 shrink-0 rounded-full bg-amber-500 animate-pulse" title="In attesa di Web MIDI"></span>
+            <select id="midi-input-select" onchange="selectMIDIInput(this.value)" aria-label="Dispositivo MIDI" class="flex-1 min-w-0 sm:flex-none sm:w-[220px] bg-stone-100 text-xs font-semibold text-neutral-800 py-1 px-2.5 rounded-lg border border-black/10 focus:outline-none focus:ring-1 focus:ring-teal-800 cursor-pointer truncate">
                 <option value="">Nessun Dispositivo MIDI</option>
             </select>
-            <button onclick="initWebMIDI()" class="p-1.5 text-xs bg-neutral-900 text-white hover:bg-neutral-800 rounded-lg transition" title="Aggiorna dispositivi MIDI">
-                <i class="fa-solid fa-rotate"></i>
+            <button onclick="initWebMIDI()" class="shrink-0 w-10 h-10 sm:w-8 sm:h-8 text-xs bg-neutral-900 text-white hover:bg-neutral-800 rounded-lg transition" title="Cerca dispositivi MIDI" aria-label="Cerca dispositivi MIDI">
+                <i class="fa-solid fa-rotate text-xs"></i>
             </button>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="flex items-center space-x-2">
+            <span class="w-px h-6 bg-black/15 shrink-0"></span>
             <input id="plant-photo-input" type="file" accept="image/*" class="hidden">
-            <button onclick="document.getElementById('plant-photo-input').click()" class="px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-stone-200 hover:bg-stone-300 text-neutral-800 transition flex items-center gap-1">
-                <i class="fa-solid fa-image"></i><span>Foto</span>
+            <button onclick="document.getElementById('plant-photo-input').click()" class="shrink-0 h-10 sm:h-8 px-3 text-xs font-semibold rounded-lg bg-teal-900 text-white hover:bg-teal-800 transition flex items-center gap-1.5" title="Carica o scatta una foto del tuo pothos" aria-label="Carica foto pothos">
+                <i class="fa-solid fa-camera text-xs"></i><span>Foto</span>
             </button>
-            <button id="plant-photo-reset" onclick="setPlantPhoto(null)" class="hidden px-2 py-1.5 text-xs font-semibold rounded-lg bg-stone-200 text-neutral-800"><i class="fa-solid fa-xmark"></i></button>
-            
-            <!-- TEST CH1 / CH2 -->
-            <button onclick="triggerSoundPulse(1)" class="px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-emerald-800 text-white hover:bg-emerald-700 transition flex items-center gap-1">
-                <i class="fa-solid fa-bolt"></i><span>Test CH1</span>
-            </button>
-            <button onclick="triggerSoundPulse(2)" class="px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-amber-700 text-white hover:bg-amber-600 transition flex items-center gap-1">
-                <i class="fa-solid fa-sun"></i><span>Test CH2</span>
-            </button>
-
-            <button onclick="toggleAudioEngine()" id="audio-btn" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-900 text-white transition flex items-center gap-1">
-                <i class="fa-solid fa-power-off"></i><span>Attiva Audio</span>
+            <button id="plant-photo-reset" onclick="setPlantPhoto(null)" class="hidden shrink-0 w-10 h-10 sm:w-8 sm:h-8 text-xs rounded-lg bg-stone-300 hover:bg-stone-400 text-neutral-800 transition" title="Torna al disegno sumi-e" aria-label="Rimuovi foto">
+                <i class="fa-solid fa-xmark text-xs"></i>
             </button>
         </div>
     </header>
 
-    <!-- MAIN VIEWPORT -->
-    <main id="viewport" class="relative w-full px-4 sm:px-8 py-6 flex-1 flex flex-col justify-center">
+    <main id="viewport" class="relative w-full px-3 sm:px-6 pt-4">
+
         <canvas id="wave-canvas"></canvas>
 
-        <section id="stage" class="stage-3d relative w-full max-w-6xl mx-auto rounded-3xl border border-black/10 bg-stone-200/60 shadow-xl p-4 sm:p-6 backdrop-blur-sm">
-            
-            <!-- Barra Superiore di Stato -->
-            <div class="flex items-center justify-between border-b border-black/10 pb-3 mb-4">
-                <div class="flex items-center gap-2">
-                    <i class="fa-solid fa-seedling text-emerald-800"></i>
-                    <h2 class="text-xs font-bold uppercase tracking-wider text-emerald-900">Monitor Biometrico Biotron</h2>
-                    <span id="bio-status" class="font-mono text-[9px] bg-stone-300 text-neutral-700 px-2 py-0.5 rounded font-bold">IN ATTESA</span>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="toggleBioSim()" id="bio-sim-btn" class="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-stone-100 hover:bg-stone-300 text-neutral-800 transition"><i class="fa-solid fa-flask mr-1"></i>Simula</button>
-                    <button onclick="toggleBioPause()" id="bio-pause-btn" class="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-stone-100 hover:bg-stone-300 text-neutral-800 transition"><i class="fa-solid fa-pause mr-1"></i>Pausa</button>
-                </div>
+        <!-- SCHERMO: dati biometrici della pianta -->
+        <section id="stage" class="relative w-full max-w-6xl mx-auto rounded-3xl overflow-hidden border border-black/10 bg-stone-200/50 shadow-2xl p-3 sm:p-5">
+
+            <svg class="absolute inset-0 w-full h-full opacity-10 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+                <defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="#141414" stroke-width="1"/></pattern></defs>
+                <rect width="100%" height="100%" fill="url(#grid)" />
+            </svg>
+            <div class="absolute inset-0 pointer-events-none">
+                <svg class="w-full h-full opacity-20 text-teal-900" viewBox="0 0 1000 500" fill="none" preserveAspectRatio="none">
+                    <path id="svg-wave-1" d="M0,250 C150,120 350,380 500,250 C650,120 850,380 1000,250" stroke="currentColor" stroke-width="3" fill="none" />
+                    <path id="svg-wave-2" d="M0,250 C200,320 300,180 500,250 C700,320 800,180 1000,250" stroke="currentColor" stroke-width="2" stroke-dasharray="8,8" fill="none" />
+                </svg>
             </div>
 
-            <!-- Griglia Principale Dati + Pianta Esplosa Permanente -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+            <div class="relative flex flex-col gap-3">
+
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-seedling text-emerald-800"></i>
+                        <h2 class="text-xs font-bold uppercase tracking-wider text-emerald-900">Dati biometrici pianta</h2>
+                        <span id="bio-status" class="font-mono text-[9px] bg-stone-300 text-neutral-700 px-1.5 py-0.5 rounded">IN ATTESA</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="toggleBioSim()" id="bio-sim-btn" class="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-stone-200 hover:bg-stone-300 text-neutral-800 transition"><i class="fa-solid fa-flask mr-1"></i> Simula segnale</button>
+                        <button onclick="toggleBioPause()" id="bio-pause-btn" class="px-2.5 py-1 text-[11px] font-semibold rounded-lg bg-stone-200 hover:bg-stone-300 text-neutral-800 transition"><i class="fa-solid fa-pause mr-1"></i> Pausa</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 gap-3 items-center max-w-xl mx-auto w-full">
+
+                    <div id="plant-wrap" class="order-1 md:order-none relative flex flex-col h-[360px] md:h-[420px] pointer-events-none">
+<div id="slot-chart" class="bio-slot"><div class="bio-card" style="padding:4px"><div class="bio-row" style="padding:0 2px 2px"><span class="bio-t">Ultimi 15 s</span><span class="bio-s">Tocco · Impedenza · Luce</span></div><canvas id="bio-canvas" style="width:100%; height:56px; display:block;"></canvas></div></div>
+<div id="slot-cc" class="bio-slot"><div class="bio-card" style="border-left:3px solid #0F5257"><div class="bio-row"><span class="bio-t">Impedenza</span><span id="bio-plant-cc-sub" class="bio-s">CC1</span></div><div id="bio-plant-cc" class="bio-v">--</div><div class="bio-bar"><div id="bio-bar-cc" style="width:0%;background:#0F5257"></div></div></div></div>
+<div id="slot-note" class="bio-slot"><div class="bio-card" style="border-left:3px solid #16A34A"><div class="bio-row"><span class="bio-t">Tocco</span><span id="bio-plant-note-sub" class="bio-s">Ch1</span></div><div id="bio-plant-note" class="bio-v">--</div><div class="bio-bar"><div id="bio-bar-note" style="width:0%;background:#16A34A"></div></div></div></div>
+<div id="slot-light" class="bio-slot"><div class="bio-card" style="border-left:3px solid #D97706"><div class="bio-row"><span class="bio-t">Luce</span><span id="bio-light-sub" class="bio-s">Ch2</span></div><div id="bio-light" class="bio-v">--</div><div class="bio-bar"><div id="bio-bar-light" style="width:0%;background:#D97706"></div></div></div></div>
+                        
+                        
+                        <div id="bio-hint" class="absolute left-1/2 bottom-2 -translate-x-1/2 z-20 px-3 py-1 rounded-full bg-stone-100/80 border border-black/10 text-[10px] font-semibold text-neutral-600 pointer-events-none transition-opacity duration-300 whitespace-nowrap"><i class="fa-regular fa-hand-pointer mr-1"></i>Dati iniziali · Tocca la pianta per vedere le variazioni</div>
+                        
+                        
+                                        <div id="plant-container" class="relative w-full flex-1 min-h-0 flex items-center justify-center plant-sway">
+                    <div id="aura-ring-1" class="absolute w-72 h-72 rounded-full border border-teal-800/40 acoustic-ring pointer-events-none"></div>
+                    <div id="aura-ring-2" class="absolute w-96 h-96 rounded-full border border-emerald-800/30 acoustic-ring pointer-events-none" style="animation-delay: 1s;"></div>
+                    <div id="aura-ring-3" class="absolute w-[450px] h-[450px] rounded-full border border-neutral-800/20 acoustic-ring pointer-events-none" style="animation-delay: 2s;"></div>
+
+                    <img id="plant-photo" alt="Pothos (Epipremnum aureum)" class="hidden w-[250px] h-[340px] sm:w-[320px] sm:h-[400px] object-cover rounded-3xl border border-black/20 shadow-2xl" style="transition: transform 0.25s ease;">
+
+                    <svg id="sumi-plant" class="w-[300px] h-[300px] sm:w-[400px] sm:h-[400px] filter drop-shadow-2xl transition-all duration-300" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M160 380 Q 250 400 340 380 L 320 420 Q 250 435 180 420 Z" fill="#1C1C1C" opacity="0.9" />
+                        <path d="M150 375 C 200 370, 300 370, 350 375 C 360 385, 340 395, 330 395 C 270 392, 230 392, 170 395 C 160 395, 140 385, 150 375 Z" fill="#2D2D2D" />
+                        <path d="M250 380 C 240 340, 210 320, 220 280 C 230 240, 280 230, 270 180 C 260 140, 230 120, 240 90" stroke="#141414" stroke-width="28" stroke-linecap="round" fill="none" opacity="0.95" />
+                        <path d="M252 380 C 242 340, 212 320, 222 280 C 232 240, 282 230, 272 180 C 262 140, 232 120, 242 90" stroke="#3A3A3A" stroke-width="15" stroke-linecap="round" fill="none" opacity="0.6" />
+                        <path d="M220 280 C 180 270, 150 250, 130 230" stroke="#141414" stroke-width="14" stroke-linecap="round" fill="none" />
+                        <path d="M270 180 C 320 170, 350 150, 380 130" stroke="#141414" stroke-width="12" stroke-linecap="round" fill="none" />
+                        <g id="plant-foliage" style="transform-origin: 250px 200px; transition: transform 0.25s ease;">
+                            <ellipse id="leaf-1" cx="240" cy="80" rx="60" ry="35" fill="#1B4D3E" opacity="0.88" />
+                            <ellipse id="leaf-2" cx="220" cy="70" rx="45" ry="25" fill="#2C6E49" opacity="0.75" />
+                            <ellipse id="leaf-3" cx="130" cy="225" rx="55" ry="30" fill="#1B4D3E" opacity="0.88" />
+                            <ellipse id="leaf-4" cx="380" cy="125" rx="65" ry="32" fill="#1B4D3E" opacity="0.88" />
+                            <ellipse id="leaf-5" cx="280" cy="175" rx="50" ry="28" fill="#141414" opacity="0.8" />
+                        </g>
+                        <rect x="330" y="390" width="22" height="22" rx="3" fill="#C84B31" opacity="0.9" />
+                        <text x="341" y="406" font-family="'Cinzel', serif" font-size="12" fill="#FFFFFF" font-weight="bold" text-anchor="middle">音</text>
+                    </svg>
+                </div>
+                    </div>
+                <div id="bio-sound" class="order-2 md:order-none relative z-10">
+                    <div class="bio-h" style="text-align:left;margin-bottom:6px">Suono</div>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                        <div class="bio-card col-span-2 sm:col-span-1" style="border-left:3px solid #0F5257"><div class="bio-row"><span class="bio-t">Risonanza</span><span id="midi-note-badge" class="bio-s">MIDI: --</span></div><h3 id="freq-val" class="bio-v font-serif-acc">432.4 Hz</h3><div class="bio-row" style="margin-top:2px"><span id="note-name-val" class="text-[10px] font-bold text-teal-800 whitespace-nowrap">Nota: A4</span><div class="h-4 flex items-center gap-0.5"><div id="eq-bar-1" class="w-1.5 bg-teal-800 rounded-full transition-all duration-150" style="height:8px"></div><div id="eq-bar-2" class="w-1.5 bg-teal-800 rounded-full transition-all duration-150" style="height:16px"></div><div id="eq-bar-3" class="w-1.5 bg-teal-800 rounded-full transition-all duration-150" style="height:11px"></div><div id="eq-bar-4" class="w-1.5 bg-teal-800 rounded-full transition-all duration-150" style="height:20px"></div><div id="eq-bar-5" class="w-1.5 bg-teal-800 rounded-full transition-all duration-150" style="height:14px"></div><div id="eq-bar-6" class="w-1.5 bg-teal-800 rounded-full transition-all duration-150" style="height:8px"></div></div></div></div>
+                        <div class="bio-card" style="border-left:3px solid #1B4D3E"><div class="bio-row"><span class="bio-t">Flusso</span><span id="vibe-val" class="bio-s">18.4 mm/s</span></div><div class="bio-bar" style="margin-top:6px"><div id="vibe-bar" style="width:76%;background:#1B4D3E"></div></div></div>
+                        <div class="bio-card" style="border-left:3px solid #737373"><div class="bio-row"><span class="bio-t">Segnale</span><span class="bio-s"><span id="bio-rate">0.0</span> ev/s</span></div><div id="velocity-val" class="bio-s" style="margin-top:6px">MIDI Velocity: 0 / 127</div></div>
+                        
+                    </div>
+                </div>
+
+                    
+                </div>
+
                 
-                <!-- Sinistra: Pianta Scomposta in Layer 3D -->
-                <div class="lg:col-span-5 relative flex items-center justify-center h-[320px] sm:h-[360px]">
-                    <div id="plant-container" class="plant-layer-group relative w-full h-full flex items-center justify-center plant-sway">
-                        
-                        <!-- Layer 1: Aura Acustica -->
-                        <div id="layer-aura" class="layer-item absolute inset-0 flex items-center justify-center pointer-events-none">
-                            <div id="aura-ring-1" class="absolute w-56 h-56 rounded-full border border-teal-800/30 acoustic-ring"></div>
-                            <div id="aura-ring-2" class="absolute w-72 h-72 rounded-full border border-emerald-800/20 acoustic-ring" style="animation-delay: 1s;"></div>
-                        </div>
 
-                        <!-- Layer 2: Sensori Biotron (Elettrodi a Coccodrillo) -->
-                        <div id="layer-sensors" class="layer-item absolute inset-0 flex items-center justify-center pointer-events-none z-30">
-                            <div class="absolute top-16 left-20 bg-emerald-900/90 text-white text-[9px] font-mono px-2 py-1 rounded shadow-lg border border-emerald-400 flex items-center gap-1">
-                                <i class="fa-solid fa-bolt text-amber-300"></i> Ch1: Elettrodo Foglia
-                            </div>
-                            <div class="absolute bottom-28 right-16 bg-amber-900/90 text-white text-[9px] font-mono px-2 py-1 rounded shadow-lg border border-amber-400 flex items-center gap-1">
-                                <i class="fa-solid fa-sun text-amber-300"></i> Ch2: Sensore Luce
-                            </div>
-                        </div>
-
-                        <!-- Immagine Reale Opzionale -->
-                        <img id="plant-photo" alt="Pothos real" class="hidden w-[220px] h-[280px] sm:w-[260px] sm:h-[320px] object-cover rounded-2xl border border-black/20 shadow-xl">
-
-                        <!-- SVG Layered Pianta Sumi-e -->
-                        <svg id="sumi-plant" class="w-[260px] h-[260px] sm:w-[320px] sm:h-[320px] filter drop-shadow-xl transition-all duration-300" viewBox="0 0 500 500" fill="none">
-                            <g id="layer-pot" class="layer-item">
-                                <path d="M160 380 Q 250 400 340 380 L 320 420 Q 250 435 180 420 Z" fill="#1C1C1C" opacity="0.9" />
-                                <path d="M150 375 C 200 370, 300 370, 350 375 C 360 385, 340 395, 330 395 C 270 392, 230 392, 170 395 C 160 395, 140 385, 150 375 Z" fill="#2D2D2D" />
-                                <rect x="330" y="390" width="22" height="22" rx="3" fill="#C84B31" opacity="0.9" />
-                                <text x="341" y="406" font-family="'Cinzel', serif" font-size="12" fill="#FFFFFF" font-weight="bold" text-anchor="middle">音</text>
-                            </g>
-                            
-                            <g id="layer-stem" class="layer-item">
-                                <path d="M250 380 C 240 340, 210 320, 220 280 C 230 240, 280 230, 270 180 C 260 140, 230 120, 240 90" stroke="#141414" stroke-width="28" stroke-linecap="round" fill="none" />
-                                <path d="M220 280 C 180 270, 150 250, 130 230" stroke="#141414" stroke-width="14" stroke-linecap="round" fill="none" />
-                                <path d="M270 180 C 320 170, 350 150, 380 130" stroke="#141414" stroke-width="12" stroke-linecap="round" fill="none" />
-                            </g>
-
-                            <g id="layer-foliage" class="layer-item">
-                                <ellipse id="leaf-1" cx="240" cy="80" rx="60" ry="35" fill="#1B4D3E" opacity="0.88" />
-                                <ellipse id="leaf-2" cx="220" cy="70" rx="45" ry="25" fill="#2C6E49" opacity="0.75" />
-                                <ellipse id="leaf-3" cx="130" cy="225" rx="55" ry="30" fill="#1B4D3E" opacity="0.88" />
-                                <ellipse id="leaf-4" cx="380" cy="125" rx="65" ry="32" fill="#1B4D3E" opacity="0.88" />
-                            </g>
-                        </svg>
-                    </div>
-                </div>
-
-                <!-- Destra: Dashboard Metriche + Controlli Audio Integrati -->
-                <div class="lg:col-span-7 flex flex-col gap-3">
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="bg-stone-100/80 p-3 rounded-2xl border border-black/5 border-l-4 border-l-emerald-600 shadow-sm relative">
-                            <div class="flex items-center justify-between">
-                                <span class="text-[10px] font-bold uppercase text-neutral-500">Nota / Frequenza (Ch1)</span>
-                                <span id="led-ch1" class="w-2.5 h-2.5 rounded-full bg-emerald-600 opacity-20 transition-opacity duration-150"></span>
-                            </div>
-                            <div class="flex items-baseline justify-between mt-1">
-                                <span id="note-name-val" class="text-xl font-bold font-serif-acc text-neutral-900">A4</span>
-                                <span id="freq-val" class="font-mono text-xs text-neutral-600">432.4 Hz</span>
-                            </div>
-                            <div class="h-1.5 bg-stone-300 rounded-full overflow-hidden mt-2">
-                                <div id="bio-bar-note" class="h-full bg-emerald-600 transition-all duration-150" style="width: 0%"></div>
-                            </div>
-                        </div>
-
-                        <div class="bg-stone-100/80 p-3 rounded-2xl border border-black/5 border-l-4 border-l-teal-700 shadow-sm">
-                            <div class="text-[10px] font-bold uppercase text-neutral-500">Impedenza / CC (Ch1)</div>
-                            <div class="flex items-baseline justify-between mt-1">
-                                <span id="bio-plant-cc" class="font-mono text-xl font-bold text-neutral-900">--</span>
-                                <span id="midi-note-badge" class="text-[10px] font-mono bg-teal-100 text-teal-900 px-1.5 py-0.5 rounded font-semibold">MIDI: --</span>
-                            </div>
-                            <div class="h-1.5 bg-stone-300 rounded-full overflow-hidden mt-2">
-                                <div id="bio-bar-cc" class="h-full bg-teal-700 transition-all duration-150" style="width: 0%"></div>
-                            </div>
-                        </div>
-
-                        <div class="bg-stone-100/80 p-3 rounded-2xl border border-black/5 border-l-4 border-l-amber-600 shadow-sm relative">
-                            <div class="flex items-center justify-between">
-                                <span class="text-[10px] font-bold uppercase text-neutral-500">Sensore Luce (Ch2)</span>
-                                <span id="led-ch2" class="w-2.5 h-2.5 rounded-full bg-amber-500 opacity-20 transition-opacity duration-150"></span>
-                            </div>
-                            <div class="flex items-baseline justify-between mt-1">
-                                <span id="bio-light" class="font-mono text-xl font-bold text-neutral-900">--</span>
-                                <span class="text-[10px] font-mono text-neutral-500">Normalizzato</span>
-                            </div>
-                            <div class="h-1.5 bg-stone-300 rounded-full overflow-hidden mt-2">
-                                <div id="bio-bar-light" class="h-full bg-amber-600 transition-all duration-150" style="width: 0%"></div>
-                            </div>
-                        </div>
-
-                        <div class="bg-stone-100/80 p-3 rounded-2xl border border-black/5 border-l-4 border-l-neutral-600 shadow-sm">
-                            <div class="text-[10px] font-bold uppercase text-neutral-500">Flusso & Velocity</div>
-                            <div class="flex items-baseline justify-between mt-1">
-                                <span id="vibe-val" class="font-mono text-xl font-bold text-neutral-900">18.4 mm/s</span>
-                                <span id="bio-rate" class="font-mono text-xs text-neutral-600">0.0 ev/s</span>
-                            </div>
-                            <div class="h-1.5 bg-stone-300 rounded-full overflow-hidden mt-2">
-                                <div id="vibe-bar" class="h-full bg-neutral-800 transition-all duration-150" style="width: 50%"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- PANNELLO CONTROLLI AUDIO AVANZATO -->
-                    <div class="bg-stone-100/90 p-3 rounded-2xl border border-black/10 shadow-sm flex items-center justify-between gap-2 mt-1">
-                        
-                        <!-- VOLUME CH1 + MUTE -->
-                        <div class="flex items-center gap-2">
-                            <div class="fader-track-container" id="fader-ch1-container">
-                                <div class="fader-track">
-                                    <div id="ch1-fader-handle" class="fader-handle" style="top: 10px;">
-                                        <div class="fader-line"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex flex-col gap-1">
-                                <div class="text-[9px] font-bold uppercase text-emerald-800">Vol CH1</div>
-                                <div id="ch1-vol-display" class="font-mono text-xs font-bold text-neutral-800">80%</div>
-                                <button onclick="toggleMute(1)" id="btn-mute-ch1" class="text-[9px] px-1.5 py-0.5 rounded bg-stone-200 text-neutral-700 font-bold">MUTE</button>
-                            </div>
-                        </div>
-
-                        <div class="h-10 w-[1px] bg-stone-300"></div>
-
-                        <!-- VOLUME CH2 + MUTE -->
-                        <div class="flex items-center gap-2">
-                            <div class="fader-track-container" id="fader-ch2-container">
-                                <div class="fader-track">
-                                    <div id="ch2-fader-handle" class="fader-handle" style="top: 10px;">
-                                        <div class="fader-line"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="flex flex-col gap-1">
-                                <div class="text-[9px] font-bold uppercase text-amber-700">Vol CH2</div>
-                                <div id="ch2-vol-display" class="font-mono text-xs font-bold text-neutral-800">80%</div>
-                                <button onclick="toggleMute(2)" id="btn-mute-ch2" class="text-[9px] px-1.5 py-0.5 rounded bg-stone-200 text-neutral-700 font-bold">MUTE</button>
-                            </div>
-                        </div>
-
-                        <div class="h-10 w-[1px] bg-stone-300"></div>
-
-                        <!-- RIVERBERO -->
-                        <div class="flex items-center gap-2">
-                            <div class="knob-container" id="knob-reverb-box">
-                                <div class="analog-knob" id="knob-reverb">
-                                    <div class="knob-indicator" id="knob-reverb-ind"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="text-[9px] font-bold uppercase text-neutral-500">Reverb</div>
-                                <div id="reverb-mix-display" class="font-mono text-xs font-bold text-neutral-800">40%</div>
-                            </div>
-                        </div>
-
-                        <div class="h-10 w-[1px] bg-stone-300"></div>
-
-                        <!-- MASTER VOLUME -->
-                        <div class="flex items-center gap-2">
-                            <div class="fader-track-container" id="fader-container">
-                                <div class="fader-track">
-                                    <div id="master-fader-handle" class="fader-handle" style="top: 25px;">
-                                        <div class="fader-line"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="text-[9px] font-bold uppercase text-neutral-500">Master</div>
-                                <div id="master-vol-display" class="font-mono text-xs font-bold text-neutral-800">50%</div>
-                            </div>
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
-
-            <!-- Canvas Grafico Onde Temporali -->
-            <div class="mt-4 pt-3 border-t border-black/5">
-                <div class="flex justify-between items-center text-[10px] font-semibold text-neutral-500 mb-1">
-                    <span class="flex items-center gap-3">
-                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-emerald-600"></span> Nota (Ch1)</span>
-                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-teal-700"></span> Impedenza (CC)</span>
-                        <span class="flex items-center gap-1"><span class="w-2.5 h-2.5 rounded-full bg-amber-600"></span> Luce (Ch2)</span>
-                    </span>
-                    <span class="font-mono text-[9px]">Finestra Temporale: 15 secondi</span>
-                </div>
-                <canvas id="bio-canvas" class="w-full h-[90px] rounded-xl bg-stone-100/50 border border-black/5 block"></canvas>
+                <p class="text-[10px] text-neutral-500">Valori normalizzati 0–1. Il segnale è musicale, non una misura scientifica della fisiologia vegetale.</p>
             </div>
         </section>
     </main>
 
-    <!-- SCRIPT LOGICA JS -->
+    <!-- IN BASSO: strumenti e controlli -->
+    <div id="controls-dock" class="relative z-50 w-full max-w-6xl mx-auto px-3 sm:px-6 my-4">
+        <div class="sumi-card rounded-2xl p-4 shadow-xl border border-teal-800/20 bg-stone-100/80 flex flex-col gap-3">
+
+            <div id="controls-toggle" role="button" tabindex="0" aria-expanded="true" aria-controls="controls-body" onclick="toggleControls()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();toggleControls()}" class="flex flex-wrap justify-between items-center gap-2 border-b border-black/10 pb-2 cursor-pointer" style="min-height:40px">
+                <span class="text-xs font-bold uppercase tracking-wider text-teal-900 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders text-teal-800 text-sm"></i> Strumenti e controlli
+                </span>
+                <span class="flex items-center gap-2">
+                    <span id="midi-badge-dot" class="w-2 h-2 rounded-full bg-teal-700 animate-pulse"></span>
+                    <span id="midi-badge-text" class="text-[10px] font-bold text-neutral-700">MIDI, Acoustic Synthesis & Reverb Pronti</span>
+                </span>
+                <i id="controls-chevron" class="fa-solid fa-chevron-down text-teal-900 text-sm transition-transform duration-300"></i>
+            </div>
+
+            <div id="controls-body" class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                    <div class="bg-stone-200/50 p-3 rounded-xl border border-black/5 flex flex-col gap-2">
+                        <span class="text-[11px] font-bold uppercase tracking-wider text-neutral-700 mb-2 flex items-center gap-1.5">
+                            <i class="fa-solid fa-music text-teal-800"></i> Modellazione Timbrica & Strumenti
+                        </span>
+
+                        <div class="grid grid-cols-1 gap-2 text-xs">
+                            <div class="">
+                                <label class="text-[10px] font-semibold text-neutral-600 block mb-1">Strumento / Modello</label>
+                                <select id="osc-instrument" onchange="setInstrument(this.value)" class="w-full bg-stone-200/80 text-neutral-800 border border-black/10 rounded px-2 py-1 text-xs font-semibold focus:outline-none">
+                                    <optgroup label="Strumenti Acustici & Etnici">
+                                        <option value="marimba" selected>Marimba / Mallets (Legno)</option>
+                                        <option value="xylophone">Xilofono / Vibrafono (Percussione)</option>
+                                        <option value="harp">Arpa / Koto (Corda Pizzicata)</option>
+                                        <option value="flute">Flauto / Ottavino (Soffio Legni)</option>
+                                        <option value="mallets">Mallets morbidi (Vibrafono / Legno dolce)</option>
+                                        <option value="bamboo">Bambù (Marimba di canne / Tubi)</option>
+                                        <option value="panflute">Flauto di Pan (Canne e Soffio)</option>
+                                    </optgroup>
+                                    <optgroup label="Sintesi Analogica & Digitale">
+                                        <option value="sawtooth">Sintesi Analogica (Juno-106 - Organico)</option>
+                                        <option value="square">Sintesi Digitale/FM (DX7 - Minerale)</option>
+                                        <option value="triangle">Triangolare (Morbida)</option>
+                                        <option value="sine">Sinusoidale Pura (Organica)</option>
+                                    </optgroup>
+                                </select>
+                            </div>
+                            <div class="">
+                                <label class="text-[10px] font-semibold text-neutral-600 block mb-1">Volume Generale</label>
+                                <input id="osc-gain" type="range" min="0" max="1" step="0.05" value="0.35" oninput="setOscGain(this.value)" class="w-full h-1.5 bg-stone-300 rounded appearance-none cursor-pointer mt-2">
+                            </div>
+                        </div>
+                    </div>
+
+                                <!-- FILTRO -->
+                <div class="bg-stone-200/50 p-3 rounded-xl border border-black/5 flex flex-col gap-2">
+                    <span class="text-[10px] font-bold uppercase text-teal-900 flex items-center justify-between">
+                        <span class="flex items-center gap-1"><i class="fa-solid fa-filter text-xs"></i> Filtro Reattivo</span>
+                        <span id="filter-type-badge" class="font-mono text-[9px] bg-teal-800 text-white px-1.5 py-0.5 rounded">LPF</span>
+                    </span>
+
+                    <div class="flex flex-col gap-1">
+                        <label class="text-[10px] font-semibold text-neutral-600">Tipo di Filtro (Topology)</label>
+                        <select id="filter-type" onchange="updateFilterType(this.value)" class="w-full bg-stone-100 text-neutral-800 border border-black/10 rounded px-2 py-1 text-xs font-semibold focus:outline-none">
+                            <option value="lowpass">Passa-Basso (Low-Pass LPF) - Organico/Scuro</option>
+                            <option value="highpass">Passa-Alto (High-Pass HPF) - Cristallino/Sottile</option>
+                            <option value="bandpass">Passa-Banda (Band-Pass BPF) - Nasale/Voce Isolata</option>
+                            <option value="notch">Notch (Band-Reject) - Spaziale/Scavato</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between text-[10px] font-semibold text-neutral-700">
+                            <span>Cutoff Frequenza</span> <span id="autofilter-cutoff-display" class="font-mono text-teal-900 font-bold">1800 Hz</span>
+                        </div>
+                        <input id="autofilter-cutoff" type="range" min="100" max="8000" step="10" value="1800" oninput="updateAutofilterCutoff(this.value)" class="w-full h-1.5 bg-stone-300 rounded appearance-none cursor-pointer">
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between text-[10px] font-semibold text-neutral-700">
+                            <span>Risonanza Q</span> <span id="autofilter-q-display" class="font-mono text-teal-900 font-bold">3.0</span>
+                        </div>
+                        <input id="autofilter-q" type="range" min="0.5" max="20" step="0.5" value="3" oninput="updateAutofilterQ(this.value)" class="w-full h-1.5 bg-stone-300 rounded appearance-none cursor-pointer">
+                    </div>
+                </div>
+
+                                <!-- REVERBERO -->
+                <div class="bg-stone-200/50 p-3 rounded-xl border border-black/5 flex flex-col gap-2">
+                    <span class="text-[10px] font-bold uppercase text-teal-900 flex items-center justify-between">
+                        <span class="flex items-center gap-1"><i class="fa-solid fa-mountain-sun text-xs"></i> Reverbero Spaziale</span>
+                        <span id="reverb-type-badge" class="font-mono text-[9px] bg-teal-800 text-white px-1.5 py-0.5 rounded">HALL</span>
+                    </span>
+
+                    <div class="flex flex-col gap-1">
+                        <label class="text-[10px] font-semibold text-neutral-600">Ambiente Acustico (Space Preset)</label>
+                        <select id="reverb-type" onchange="updateReverbType(this.value)" class="w-full bg-stone-100 text-neutral-800 border border-black/10 rounded px-2 py-1 text-xs font-semibold focus:outline-none">
+                            <option value="hall">Hall (Sala da Concerto) - Caldo & Ampio</option>
+                            <option value="room">Room (Stanza Intima) - Materico & Vicino</option>
+                            <option value="cave">Cave (Caverna Naturale) - Profondo & Immensità</option>
+                            <option value="plate">Plate (Piastra Metallica) - Brillante & Minerale</option>
+                        </select>
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between text-[10px] font-semibold text-neutral-700">
+                            <span>Decay Time (Durata Coda)</span> <span id="reverb-decay-display" class="font-mono text-teal-900 font-bold">2.5 s</span>
+                        </div>
+                        <input id="reverb-decay" type="range" min="0.5" max="8" step="0.5" value="2.5" oninput="updateReverbDecay(this.value)" class="w-full h-1.5 bg-stone-300 rounded appearance-none cursor-pointer">
+                    </div>
+
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between text-[10px] font-semibold text-neutral-700">
+                            <span>Reverb Mix (Wet)</span> <span id="reverb-mix-display" class="font-mono text-teal-900 font-bold">40%</span>
+                        </div>
+                        <input id="reverb-mix" type="range" min="0" max="1" step="0.05" value="0.4" oninput="updateReverbMix(this.value)" class="w-full h-1.5 bg-stone-300 rounded appearance-none cursor-pointer">
+                    </div>
+                </div>
+            </div>
+
+            
+        </div>
+    </div>
+
     <script>
+        // State Globale dell'App
         const state = {
             midiAccess: null,
             activeMidiInput: null,
@@ -422,145 +434,80 @@
             frequency: 432.4,
             vibration: 18.4,
             velocity: 0,
+            // Parametri Audio Engine
             audioCtx: null,
             masterGain: null,
-            ch1Gain: null,
-            ch2Gain: null,
+            filterNode: null,
+            filterTypeVal: 'lowpass',
+            lfoNode: null,
+            lfoGain: null,
             reverbNode: null,
             reverbGain: null,
-            gainValue: 0.50,
-            ch1Vol: 0.80,
-            ch2Vol: 0.80,
-            ch1Muted: false,
-            ch2Muted: false,
+            reverbTypeVal: 'hall',
+            currentOsc: null,
+            instrumentModel: 'marimba',
+            gainValue: 0.35,
+            filterCutoff: 1800,
+            filterQ: 3.0,
+            lfoRate: 2.5,
+            lfoDepth: 400,
             reverbDecayVal: 2.5,
             reverbMixVal: 0.4,
-            lastCC1Val: null,
-            lastCC1Time: 0
+            isAudioActive: false
         };
 
-        /* CONTROLLI INTERATTIVI */
-        function initInteractiveControls() {
-            const knobReverb = document.getElementById('knob-reverb-box');
-            const reverbInd = document.getElementById('knob-reverb-ind');
-            let isDraggingReverb = false, startYReverb = 0;
-
-            function updateReverbUI() {
-                const deg = -135 + state.reverbMixVal * 270;
-                reverbInd.style.transform = `rotate(${deg}deg)`;
-                document.getElementById('reverb-mix-display').textContent = `${Math.round(state.reverbMixVal * 100)}%`;
-            }
-
-            knobReverb.addEventListener('pointerdown', e => { 
-                isDraggingReverb = true; 
-                startYReverb = e.clientY; 
-                knobReverb.setPointerCapture(e.pointerId); 
-            });
-            knobReverb.addEventListener('pointermove', e => {
-                if (!isDraggingReverb) return;
-                const dy = startYReverb - e.clientY;
-                startYReverb = e.clientY;
-                state.reverbMixVal = Math.min(1, Math.max(0, state.reverbMixVal + dy * 0.01));
-                if (state.reverbGain && state.audioCtx) {
-                    state.reverbGain.gain.setValueAtTime(state.reverbMixVal, state.audioCtx.currentTime);
-                }
-                updateReverbUI();
-            });
-            knobReverb.addEventListener('pointerup', e => {
-                isDraggingReverb = false;
-                try { knobReverb.releasePointerCapture(e.pointerId); } catch(err) {}
-            });
-
-            function setupFader(containerId, handleId, displayId, initialVal, onUpdate) {
-                const container = document.getElementById(containerId);
-                const handle = document.getElementById(handleId);
-                let isDragging = false;
-
-                function updatePos(clientY) {
-                    const rect = container.getBoundingClientRect();
-                    let y = clientY - rect.top;
-                    y = Math.min(48, Math.max(0, y));
-                    handle.style.top = `${y}px`;
-
-                    const val = 1 - (y / 48);
-                    onUpdate(val);
-                    document.getElementById(displayId).textContent = `${Math.round(val * 100)}%`;
-                }
-
-                container.addEventListener('pointerdown', e => { 
-                    isDragging = true; 
-                    container.setPointerCapture(e.pointerId); 
-                    updatePos(e.clientY); 
-                });
-                container.addEventListener('pointermove', e => { if (isDragging) updatePos(e.clientY); });
-                container.addEventListener('pointerup', e => {
-                    isDragging = false;
-                    try { container.releasePointerCapture(e.pointerId); } catch(err) {}
-                });
-            }
-
-            setupFader('fader-container', 'master-fader-handle', 'master-vol-display', state.gainValue, val => {
-                state.gainValue = val;
-                if (state.masterGain && state.audioCtx) state.masterGain.gain.setValueAtTime(val, state.audioCtx.currentTime);
-            });
-
-            setupFader('fader-ch1-container', 'ch1-fader-handle', 'ch1-vol-display', state.ch1Vol, val => {
-                state.ch1Vol = val;
-                if (!state.ch1Muted && state.ch1Gain && state.audioCtx) state.ch1Gain.gain.setValueAtTime(val, state.audioCtx.currentTime);
-            });
-
-            setupFader('fader-ch2-container', 'ch2-fader-handle', 'ch2-vol-display', state.ch2Vol, val => {
-                state.ch2Vol = val;
-                if (!state.ch2Muted && state.ch2Gain && state.audioCtx) state.ch2Gain.gain.setValueAtTime(val, state.audioCtx.currentTime);
-            });
-
-            updateReverbUI();
-        }
-
-        function toggleMute(ch) {
-            if (ch === 1) {
-                state.ch1Muted = !state.ch1Muted;
-                const btn = document.getElementById('btn-mute-ch1');
-                btn.className = state.ch1Muted ? "text-[9px] px-1.5 py-0.5 rounded bg-red-600 text-white font-bold" : "text-[9px] px-1.5 py-0.5 rounded bg-stone-200 text-neutral-700 font-bold";
-                if (state.ch1Gain && state.audioCtx) state.ch1Gain.gain.setValueAtTime(state.ch1Muted ? 0 : state.ch1Vol, state.audioCtx.currentTime);
-            } else if (ch === 2) {
-                state.ch2Muted = !state.ch2Muted;
-                const btn = document.getElementById('btn-mute-ch2');
-                btn.className = state.ch2Muted ? "text-[9px] px-1.5 py-0.5 rounded bg-red-600 text-white font-bold" : "text-[9px] px-1.5 py-0.5 rounded bg-stone-200 text-neutral-700 font-bold";
-                if (state.ch2Gain && state.audioCtx) state.ch2Gain.gain.setValueAtTime(state.ch2Muted ? 0 : state.ch2Vol, state.audioCtx.currentTime);
-            }
-        }
-
-        /* WEB AUDIO API */
-        function createImpulseResponse(ctx, duration) {
+        /* ====================================================================
+           MOTORE WEB AUDIO API
+           ==================================================================== */
+        function createImpulseResponse(ctx, duration, type = 'hall') {
             const sampleRate = ctx.sampleRate;
             const length = Math.floor(sampleRate * duration);
             const impulse = ctx.createBuffer(2, length, sampleRate);
             const left = impulse.getChannelData(0);
             const right = impulse.getChannelData(1);
+
             let decayPower = 2.0;
+            let filterFreq = 1.0;
+
+            if (type === 'room') {
+                decayPower = 4.0; filterFreq = 0.5;
+            } else if (type === 'cave') {
+                decayPower = 1.2; filterFreq = 0.3;
+            } else if (type === 'plate') {
+                decayPower = 2.5; filterFreq = 1.8;
+            }
 
             for (let i = 0; i < length; i++) {
                 const env = Math.pow(1 - i / length, decayPower);
-                left[i] = (Math.random() * 2 - 1) * env;
-                right[i] = (Math.random() * 2 - 1) * env;
+                let leftSample = (Math.random() * 2 - 1) * env;
+                let rightSample = (Math.random() * 2 - 1) * env;
+
+                if (type === 'plate') {
+                    leftSample *= (1 + (i / length) * filterFreq);
+                    rightSample *= (1 + (i / length) * filterFreq);
+                }
+
+                left[i] = leftSample;
+                right[i] = rightSample;
             }
             return impulse;
         }
 
         function setAudioButton(active) {
             const btn = document.getElementById('audio-btn');
+            if (!btn) return;
             if (active) {
                 btn.innerHTML = `<i class="fa-solid fa-power-off text-xs"></i><span>Disattiva Audio</span>`;
-                btn.className = "px-3 py-1.5 text-xs font-semibold rounded-lg bg-red-800 text-white hover:bg-red-700 transition flex items-center gap-1";
+                btn.className = "px-3 py-1.5 text-xs font-semibold rounded-lg bg-red-800 text-white hover:bg-red-700 transition flex items-center gap-1.5";
             } else {
-                btn.innerHTML = `<i class="fa-solid fa-power-off text-xs"></i><span>Attiva Audio</span>`;
-                btn.className = "px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-800 text-white hover:bg-emerald-700 transition flex items-center gap-1";
+                btn.innerHTML = `<i class="fa-solid fa-power-off text-xs"></i><span>Attiva Audio Engine</span>`;
+                btn.className = "px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-800 text-white hover:bg-emerald-700 transition flex items-center gap-1.5";
             }
         }
 
         function initAudioEngine() {
             if (state.audioCtx) return;
+
             const AudioCtx = window.AudioContext || window.webkitAudioContext;
             state.audioCtx = new AudioCtx({ latencyHint: 'interactive' });
             const ctx = state.audioCtx;
@@ -568,28 +515,37 @@
             state.masterGain = ctx.createGain();
             state.masterGain.gain.setValueAtTime(state.gainValue, ctx.currentTime);
 
-            state.ch1Gain = ctx.createGain();
-            state.ch1Gain.gain.setValueAtTime(state.ch1Muted ? 0 : state.ch1Vol, ctx.currentTime);
+            state.filterNode = ctx.createBiquadFilter();
+            state.filterNode.type = state.filterTypeVal;
+            state.filterNode.frequency.setValueAtTime(state.filterCutoff, ctx.currentTime);
+            state.filterNode.Q.setValueAtTime(state.filterQ, ctx.currentTime);
 
-            state.ch2Gain = ctx.createGain();
-            state.ch2Gain.gain.setValueAtTime(state.ch2Muted ? 0 : state.ch2Vol, ctx.currentTime);
+            // LFO per Autofilter
+            state.lfoNode = ctx.createOscillator();
+            state.lfoNode.type = 'sine';
+            state.lfoNode.frequency.setValueAtTime(state.lfoRate, ctx.currentTime);
+            state.lfoGain = ctx.createGain();
+            state.lfoGain.gain.setValueAtTime(state.lfoDepth, ctx.currentTime);
+            state.lfoNode.connect(state.lfoGain);
+            state.lfoGain.connect(state.filterNode.frequency);
+            state.lfoNode.start();
 
+            // Reverbero (convoluzione)
             state.reverbNode = ctx.createConvolver();
-            state.reverbNode.buffer = createImpulseResponse(ctx, state.reverbDecayVal);
+            state.reverbNode.buffer = createImpulseResponse(ctx, state.reverbDecayVal, state.reverbTypeVal);
             state.reverbGain = ctx.createGain();
             state.reverbGain.gain.setValueAtTime(state.reverbMixVal, ctx.currentTime);
-
-            state.ch1Gain.connect(state.masterGain);
-            state.ch1Gain.connect(state.reverbNode);
-
-            state.ch2Gain.connect(state.masterGain);
-            state.ch2Gain.connect(state.reverbNode);
-
             state.reverbNode.connect(state.reverbGain);
+
+            // Routing: Filter -> Master (dry) + Filter -> Reverb -> Master (wet)
+            state.filterNode.connect(state.masterGain);
+            state.filterNode.connect(state.reverbNode);
             state.reverbGain.connect(state.masterGain);
             state.masterGain.connect(ctx.destination);
 
+            state.isAudioActive = true;
             setAudioButton(true);
+            logMIDIMessage("AUDIO ENGINE", "Inizializzato con Modellazione Acustica & Reverb Engine");
         }
 
         function toggleAudioEngine() {
@@ -604,85 +560,330 @@
             }
         }
 
-        function playOscillatorNote(freq, velocity = 100, channel = 1) {
+        // MOTORE DI SINTESI ACUSTICA & MODELLAZIONE STRUMENTI
+        function playOscillatorNote(freq, velocity = 100) {
             if (!state.audioCtx) initAudioEngine();
             if (state.audioCtx.state === 'suspended') state.audioCtx.resume();
 
             const ctx = state.audioCtx;
             const now = ctx.currentTime;
-            const vol = (velocity / 127);
-
-            const osc = ctx.createOscillator();
-            const noteGain = ctx.createGain();
-
-            // FLASH LED CANALE ATTIVO
-            const led = document.getElementById(channel === 2 ? 'led-ch2' : 'led-ch1');
-            if (led) {
-                led.style.opacity = '1';
-                setTimeout(() => { led.style.opacity = '0.2'; }, 200);
+            const vol = (velocity / 127) * state.gainValue;
+            const model = state.instrumentModel;
+            if (['xylophone', 'mallets', 'bamboo', 'panflute'].includes(model)) {
+                playNatural(model, freq, vol, now);
+                return;
             }
 
-            if (channel === 2) {
+            if (model === 'marimba' || model === 'xylophone') {
+                const osc = ctx.createOscillator();
+                const noteGain = ctx.createGain();
+
+                osc.type = (model === 'marimba') ? 'sine' : 'triangle';
+                osc.frequency.setValueAtTime(freq, now);
+
+                noteGain.gain.setValueAtTime(0, now);
+                noteGain.gain.linearRampToValueAtTime(vol, now + 0.005);
+                const decayTime = (model === 'marimba') ? 0.8 : 1.2;
+                noteGain.gain.exponentialRampToValueAtTime(0.0001, now + decayTime);
+
+                const oscHarmonic = ctx.createOscillator();
+                const harmonicGain = ctx.createGain();
+                oscHarmonic.type = 'sine';
+                oscHarmonic.frequency.setValueAtTime(freq * 3.8, now);
+                harmonicGain.gain.setValueAtTime(vol * 0.4, now);
+                harmonicGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.05);
+
+                osc.connect(noteGain);
+                oscHarmonic.connect(harmonicGain);
+                noteGain.connect(state.filterNode);
+                harmonicGain.connect(state.filterNode);
+
+                osc.start(now);
+                oscHarmonic.start(now);
+                osc.stop(now + decayTime);
+                oscHarmonic.stop(now + 0.06);
+
+            } else if (model === 'harp') {
+                const osc = ctx.createOscillator();
+                const noteGain = ctx.createGain();
+
                 osc.type = 'triangle';
-                osc.frequency.setValueAtTime(freq * 2, now);
-            } else {
+                osc.frequency.setValueAtTime(freq, now);
+
+                noteGain.gain.setValueAtTime(0, now);
+                noteGain.gain.linearRampToValueAtTime(vol * 1.2, now + 0.01);
+                noteGain.gain.exponentialRampToValueAtTime(0.0001, now + 2.2);
+
+                osc.connect(noteGain);
+                noteGain.connect(state.filterNode);
+
+                osc.start(now);
+                osc.stop(now + 2.25);
+
+            } else if (model === 'flute') {
+                const osc = ctx.createOscillator();
+                const noteGain = ctx.createGain();
+
                 osc.type = 'sine';
                 osc.frequency.setValueAtTime(freq, now);
+
+                noteGain.gain.setValueAtTime(0, now);
+                noteGain.gain.linearRampToValueAtTime(vol * 0.9, now + 0.12);
+                noteGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.8);
+
+                const bufferSize = Math.floor(ctx.sampleRate * 0.2);
+                const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const output = noiseBuffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) output[i] = Math.random() * 2 - 1;
+                const whiteNoise = ctx.createBufferSource();
+                whiteNoise.buffer = noiseBuffer;
+
+                const noiseFilter = ctx.createBiquadFilter();
+                noiseFilter.type = 'bandpass';
+                noiseFilter.frequency.setValueAtTime(freq * 2, now);
+                noiseFilter.Q.setValueAtTime(5.0, now);
+
+                const noiseGain = ctx.createGain();
+                noiseGain.gain.setValueAtTime(vol * 0.15, now);
+                noiseGain.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
+
+                whiteNoise.connect(noiseFilter);
+                noiseFilter.connect(noiseGain);
+                noiseGain.connect(state.filterNode);
+
+                osc.connect(noteGain);
+                noteGain.connect(state.filterNode);
+
+                osc.start(now);
+                whiteNoise.start(now);
+                osc.stop(now + 1.85);
+                whiteNoise.stop(now + 0.35);
+
+            } else {
+                if (state.currentOsc) {
+                    try { state.currentOsc.stop(); } catch (e) {}
+                }
+
+                const osc = ctx.createOscillator();
+                const noteGain = ctx.createGain();
+
+                osc.type = model;
+                osc.frequency.setValueAtTime(freq, now);
+
+                noteGain.gain.setValueAtTime(vol, now);
+                noteGain.gain.exponentialRampToValueAtTime(0.0001, now + 1.5);
+
+                osc.connect(noteGain);
+                noteGain.connect(state.filterNode);
+
+                osc.start(now);
+                osc.stop(now + 1.5);
+                state.currentOsc = osc;
             }
-
-            noteGain.gain.setValueAtTime(0, now);
-            noteGain.gain.linearRampToValueAtTime(vol, now + 0.005);
-            noteGain.gain.exponentialRampToValueAtTime(0.0001, now + (channel === 2 ? 0.8 : 1.4));
-
-            osc.connect(noteGain);
-            const targetChannelNode = channel === 2 ? state.ch2Gain : state.ch1Gain;
-            noteGain.connect(targetChannelNode);
-
-            osc.start(now);
-            osc.stop(now + (channel === 2 ? 0.85 : 1.45));
         }
 
-        /* WEB MIDI API */
+        // STRUMENTI NATURALI: sintesi additiva con parziali inarmonici + rumore d'attacco/soffio
+        function playNatural(model, freq, vol, now) {
+            const ctx = state.audioCtx, out = state.filterNode;
+            const tone = (f, g, dec, att = 0.003, detune = 0) => {
+                const o = ctx.createOscillator(), n = ctx.createGain();
+                o.type = 'sine'; o.frequency.setValueAtTime(f, now); o.detune.value = detune;
+                n.gain.setValueAtTime(0.0001, now);
+                n.gain.linearRampToValueAtTime(Math.max(g, 0.0002), now + att);
+                n.gain.exponentialRampToValueAtTime(0.0001, now + dec);
+                o.connect(n); n.connect(out); o.start(now); o.stop(now + dec + 0.05);
+            };
+            const noise = (dur, f, q, g, att = 0.002, type = 'bandpass') => {
+                const len = Math.floor(ctx.sampleRate * dur), b = ctx.createBuffer(1, len, ctx.sampleRate), d = b.getChannelData(0);
+                for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1;
+                const src = ctx.createBufferSource(); src.buffer = b;
+                const fl = ctx.createBiquadFilter(); fl.type = type; fl.frequency.setValueAtTime(f, now); fl.Q.value = q;
+                const n = ctx.createGain();
+                n.gain.setValueAtTime(0.0001, now);
+                n.gain.linearRampToValueAtTime(Math.max(g, 0.0002), now + att);
+                n.gain.exponentialRampToValueAtTime(0.0001, now + dur);
+                src.connect(fl); fl.connect(n); n.connect(out); src.start(now); src.stop(now + dur);
+            };
+            if (model === 'xylophone') {            // legno duro: parziali 1 : 3 : 6, secco e brillante
+                tone(freq, vol, 0.9); tone(freq * 3, vol * 0.45, 0.35); tone(freq * 6, vol * 0.2, 0.12);
+                noise(0.025, Math.min(freq * 5, 9000), 3, vol * 0.25);
+            } else if (model === 'mallets') {       // mallet morbidi: attacco dolce, coda lunga, leggero battimento
+                tone(freq, vol, 2.4, 0.008); tone(freq, vol * 0.5, 2.0, 0.008, 6);
+                tone(freq * 4, vol * 0.18, 0.7, 0.006); tone(freq * 10, vol * 0.05, 0.25);
+                noise(0.06, freq * 1.5, 1, vol * 0.18, 0.004, 'lowpass');
+            } else if (model === 'bamboo') {        // canna cava: colpo di legno + risonanza breve del tubo
+                tone(freq, vol, 0.7, 0.002); tone(freq * 2.76, vol * 0.22, 0.22); tone(freq * 5.4, vol * 0.08, 0.08);
+                noise(0.05, 1800, 6, vol * 0.35);
+                noise(0.12, freq * 1.2, 4, vol * 0.2, 0.002, 'lowpass');
+            } else if (model === 'panflute') {      // canne chiuse: soffio, onda quasi pura, 2a armonica lieve
+                const dur = 1.5;
+                tone(freq, vol * 0.8, dur, 0.09); tone(freq * 2, vol * 0.12, dur * 0.7, 0.09);
+                noise(dur, freq, 9, vol * 0.3, 0.06);
+                noise(0.12, freq * 2, 3, vol * 0.18, 0.01);
+            }
+        }
+
+        function setInstrument(model) {
+            state.instrumentModel = model;
+            const modelNames = {
+                'marimba': 'Marimba / Mallets',
+                'xylophone': 'Xilofono / Vibrafono',
+                'harp': 'Arpa / Koto',
+                'flute': 'Flauto / Ottavino',
+                'mallets': 'Mallets morbidi',
+                'bamboo': 'Bambù',
+                'panflute': 'Flauto di Pan',
+                'sawtooth': 'Analogico (Juno-106)',
+                'square': 'FM Digitale (DX7)',
+                'triangle': 'Triangolare',
+                'sine': 'Sinusoidale'
+            };
+            logMIDIMessage("STRUMENTO", `Selezionato: ${modelNames[model] || model}`);
+        }
+
+        function updateReverbType(type) {
+            state.reverbTypeVal = type;
+            const badgeMap = { 'hall': 'HALL', 'room': 'ROOM', 'cave': 'CAVE', 'plate': 'PLATE' };
+            document.getElementById('reverb-type-badge').textContent = badgeMap[type] || 'HALL';
+
+            const defaultDecay = { 'room': 0.8, 'hall': 2.5, 'cave': 5.0, 'plate': 2.0 };
+            if (defaultDecay[type]) {
+                state.reverbDecayVal = defaultDecay[type];
+                document.getElementById('reverb-decay').value = state.reverbDecayVal;
+                document.getElementById('reverb-decay-display').textContent = `${state.reverbDecayVal.toFixed(1)} s`;
+            }
+
+            if (state.audioCtx && state.reverbNode) {
+                state.reverbNode.buffer = createImpulseResponse(state.audioCtx, state.reverbDecayVal, type);
+            }
+            logMIDIMessage("REVERBERO", `Ambiente impostato su: ${type.toUpperCase()}`);
+        }
+
+        function updateFilterType(type) {
+            state.filterTypeVal = type;
+            const badgeMap = { 'lowpass': 'LPF', 'highpass': 'HPF', 'bandpass': 'BPF', 'notch': 'NOTCH' };
+            document.getElementById('filter-type-badge').textContent = badgeMap[type] || 'LPF';
+
+            if (state.filterNode && state.audioCtx) state.filterNode.type = type;
+            logMIDIMessage("FILTRO", `Modalità impostata su: ${type.toUpperCase()}`);
+        }
+
+        function updateAutofilterCutoff(val) {
+            state.filterCutoff = parseFloat(val);
+            document.getElementById('autofilter-cutoff-display').textContent = `${Math.round(state.filterCutoff)} Hz`;
+            if (state.filterNode && state.audioCtx) {
+                state.filterNode.frequency.setValueAtTime(state.filterCutoff, state.audioCtx.currentTime);
+            }
+        }
+
+        function updateAutofilterQ(val) {
+            state.filterQ = parseFloat(val);
+            document.getElementById('autofilter-q-display').textContent = `${state.filterQ.toFixed(1)}`;
+            if (state.filterNode && state.audioCtx) {
+                state.filterNode.Q.setValueAtTime(state.filterQ, state.audioCtx.currentTime);
+            }
+        }
+
+        function updateReverbDecay(val) {
+            state.reverbDecayVal = parseFloat(val);
+            document.getElementById('reverb-decay-display').textContent = `${state.reverbDecayVal.toFixed(1)} s`;
+            if (state.audioCtx && state.reverbNode) {
+                state.reverbNode.buffer = createImpulseResponse(state.audioCtx, state.reverbDecayVal, state.reverbTypeVal);
+            }
+        }
+
+        function updateReverbMix(val) {
+            state.reverbMixVal = parseFloat(val);
+            document.getElementById('reverb-mix-display').textContent = `${Math.round(state.reverbMixVal * 100)}%`;
+            if (state.reverbGain && state.audioCtx) {
+                state.reverbGain.gain.setValueAtTime(state.reverbMixVal, state.audioCtx.currentTime);
+            }
+        }
+
+        function setOscGain(val) {
+            state.gainValue = parseFloat(val);
+            if (state.masterGain && state.audioCtx) {
+                state.masterGain.gain.setValueAtTime(state.gainValue, state.audioCtx.currentTime);
+            }
+        }
+
+        /* ====================================================================
+           MOTORE WEB MIDI API
+           ==================================================================== */
         const midiNoteNames = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
-        function midiNoteToFrequency(note) { return (440 * Math.pow(2, (note - 69) / 12)).toFixed(1); }
-        function midiNoteToName(note) { return `${midiNoteNames[note % 12]}${Math.floor(note / 12) - 1}`; }
+
+        function midiNoteToFrequency(note) {
+            return (440 * Math.pow(2, (note - 69) / 12)).toFixed(1);
+        }
+
+        function midiNoteToName(note) {
+            return `${midiNoteNames[note % 12]}${Math.floor(note / 12) - 1}`;
+        }
 
         async function initWebMIDI() {
             const statusLed = document.getElementById('midi-status-led');
+
             if (navigator.requestMIDIAccess) {
                 try {
                     state.midiAccess = await navigator.requestMIDIAccess({ sysex: false });
-                    statusLed.className = "w-2.5 h-2.5 rounded-full bg-emerald-500";
+                    statusLed.className = "w-3 h-3 rounded-full bg-emerald-500";
+                    statusLed.title = "Web MIDI API Attivo";
+
                     updateMIDIInputList();
                     state.midiAccess.onstatechange = () => updateMIDIInputList();
-                } catch (err) { statusLed.className = "w-2.5 h-2.5 rounded-full bg-red-500"; }
-            } else { statusLed.className = "w-2.5 h-2.5 rounded-full bg-amber-500"; }
+                    logMIDIMessage("SISTEMA", "Web MIDI API Inizializzato con successo");
+                } catch (err) {
+                    console.warn("Accesso MIDI negato o fallito:", err);
+                    statusLed.className = "w-3 h-3 rounded-full bg-red-500";
+                    logMIDIMessage("ERRORE", "Accesso Web MIDI non autorizzato o non supportato");
+                }
+            } else {
+                statusLed.className = "w-3 h-3 rounded-full bg-amber-500";
+                logMIDIMessage("AVVISO", "Browser senza supporto nativo Web MIDI.");
+            }
         }
 
         function updateMIDIInputList() {
             const select = document.getElementById('midi-input-select');
             select.innerHTML = '<option value="">Seleziona Dispositivo MIDI</option>';
+
             if (!state.midiAccess) return;
 
-            const inputs = Array.from(state.midiAccess.inputs.values());
-            inputs.forEach((input, index) => {
+            let count = 0;
+            for (let input of state.midiAccess.inputs.values()) {
+                count++;
                 const opt = document.createElement('option');
                 opt.value = input.id;
-                opt.textContent = input.name || `Dispositivo MIDI ${index + 1}`;
+                opt.textContent = input.name || `Dispositivo MIDI ${count}`;
                 select.appendChild(opt);
-            });
+            }
 
-            if (inputs.length > 0 && !state.activeMidiInput) selectMIDIInput(inputs[0].id);
+            if (count > 0) {
+                if (!state.activeMidiInput) {
+                    const firstInput = state.midiAccess.inputs.values().next().value;
+                    if (firstInput) selectMIDIInput(firstInput.id);
+                } else {
+                    select.value = state.activeMidiInput.id;
+                }
+            } else {
+                state.activeMidiInput = null;
+                logMIDIMessage("MIDI", "Nessun controller rilevato");
+            }
         }
 
         function selectMIDIInput(inputId) {
             if (!state.midiAccess) return;
+
             if (state.activeMidiInput) state.activeMidiInput.onmidimessage = null;
+
             const input = state.midiAccess.inputs.get(inputId);
             if (input) {
                 state.activeMidiInput = input;
                 input.onmidimessage = handleMIDIMessage;
                 document.getElementById('midi-input-select').value = inputId;
+                logMIDIMessage("CONNESSO", `Controller: ${input.name}`);
+            } else {
+                state.activeMidiInput = null;
             }
         }
 
@@ -691,8 +892,11 @@
             const command = status >> 4;
             const channel = (status & 0xf) + 1;
 
-            if (command === 9 && data2 > 0) {
-                handleNoteOn(data1, data2, channel);
+            if (command === 9) {
+                if (data2 > 0) handleNoteOn(data1, data2, channel);
+                else handleNoteOff(data1, channel);
+            } else if (command === 8) {
+                handleNoteOff(data1, channel);
             } else if (command === 11) {
                 handleControlChange(data1, data2, channel);
             }
@@ -706,100 +910,238 @@
             state.activeNote = note;
             state.frequency = freq;
             state.velocity = velocity;
+            state.vibration = (10 + (velocity / 127) * 20).toFixed(1);
 
             document.getElementById('freq-val').textContent = `${freq} Hz`;
-            document.getElementById('note-name-val').textContent = noteName;
-            document.getElementById('midi-note-badge').textContent = `MIDI: ${note}`;
+            document.getElementById('note-name-val').textContent = `Nota: ${noteName}`;
+            document.getElementById('midi-note-badge').textContent = `MIDI Note: ${note}`;
+            document.getElementById('vibe-val').textContent = `${state.vibration} mm/s`;
             document.getElementById('vibe-bar').style.width = `${Math.round((velocity / 127) * 100)}%`;
+            document.getElementById('velocity-val').textContent = `MIDI Velocity: ${velocity} / 127`;
 
-            playOscillatorNote(freq, velocity, channel);
+            const dynamicCutoff = 300 + (velocity / 127) * 5000;
+            updateAutofilterCutoff(dynamicCutoff);
+            document.getElementById('autofilter-cutoff').value = dynamicCutoff;
+
+            playOscillatorNote(freq, velocity);
+
+            const cx = window.innerWidth / 2 + (Math.random() * 100 - 50);
+            const cy = window.innerHeight / 2 + (Math.random() * 100 - 50);
+            activeWaves.push(new SoundWaveRing(cx, cy, '#0F5257', (velocity / 127) * 100 + 40));
+
+            pulsePlantFoliage(velocity);
+
+            logMIDIMessage("NOTE ON", `Nota: ${noteName} (${note}) | Vel: ${velocity} | Ch: ${channel}`);
+        }
+
+        function handleNoteOff(note, channel = 1) {
+            logMIDIMessage("NOTE OFF", `Nota: ${midiNoteToName(note)} (${note}) | Ch: ${channel}`);
         }
 
         function handleControlChange(ccNumber, ccValue, channel = 1) {
-            const now = performance.now();
-            
-            if (channel === 2) {
-                bioFeed('light', ccValue / 127);
-                const freq = 400 + (ccValue / 127) * 800;
-                playOscillatorNote(freq, Math.max(30, ccValue), 2);
-            } 
-            // CANALE 1 (PIANTA / BIOTRON): Gestione Dinamica dell'Impedenza
-            else if (channel === 1) {
-                const normVal = ccValue / 127;
-                bioFeed('plantCC', normVal);
+            if (channel === 2) bioFeed('light', ccValue / 127);
+            else if (ccNumber === 1) bioFeed('plantCC', ccValue / 127);
+            if (ccNumber === 1) {
+                const newCutoff = Math.round(100 + (ccValue / 127) * 7000);
+                updateAutofilterCutoff(newCutoff);
+                document.getElementById('autofilter-cutoff').value = newCutoff;
 
-                // Calcolo della variazione (Delta) per innescare l'audio anche su piccoli sbalzi
-                let delta = 0;
-                if (state.lastCC1Val !== null) {
-                    delta = Math.abs(ccValue - state.lastCC1Val);
-                }
-                state.lastCC1Val = ccValue;
-
-                // Calcola frequenza dinamica tra 180Hz e 680Hz
-                const freq = 180 + normVal * 500;
-                const generatedVelocity = Math.min(127, Math.max(45, ccValue + delta * 8));
-
-                // Trigger audio se il valore cambia o se sono trascorsi più di 200ms dall'ultimo impulso
-                if (delta > 0 || (now - state.lastCC1Time > 200 && ccValue > 5)) {
-                    state.lastCC1Time = now;
-                    
-                    // Calcolo Nota MIDI corrispondente approssimativa per il Display
-                    const calculatedNote = Math.round(36 + normVal * 48);
-                    const noteName = midiNoteToName(calculatedNote);
-                    
-                    document.getElementById('freq-val').textContent = `${freq.toFixed(1)} Hz`;
-                    document.getElementById('note-name-val').textContent = noteName;
-                    document.getElementById('midi-note-badge').textContent = `CC:${ccNumber} v:${ccValue}`;
-                    document.getElementById('vibe-bar').style.width = `${Math.round((generatedVelocity / 127) * 100)}%`;
-
-                    playOscillatorNote(freq, generatedVelocity, 1);
-                }
+                const newReverbMix = (ccValue / 127) * 0.8;
+                updateReverbMix(newReverbMix);
+                document.getElementById('reverb-mix').value = newReverbMix;
             }
+
+            logMIDIMessage("CC CONTROL", `CC #${ccNumber} = ${ccValue} | Ch: ${channel}`);
         }
 
-        /* CANVAS VISUALIZER */
-        const waveCanvas = document.getElementById('wave-canvas');
-        const waveCtx = waveCanvas.getContext('2d');
-        function resizeCanvas() { waveCanvas.width = window.innerWidth; waveCanvas.height = window.innerHeight; }
+        function logMIDIMessage(type, msg) {
+            const logUl = document.getElementById('midi-log');
+            if (!logUl) return;
 
-        function animateWaves() {
-            waveCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-            const time = Date.now() * 0.002;
-            waveCtx.save();
-            waveCtx.globalAlpha = 0.08;
-            waveCtx.strokeStyle = '#0F5257';
-            waveCtx.lineWidth = 1.5;
-            waveCtx.beginPath();
-            for (let x = 0; x < window.innerWidth; x += 10) {
-                const y = window.innerHeight / 2 + Math.sin(x * 0.01 + time) * 30;
-                if (x === 0) waveCtx.moveTo(x, y); else waveCtx.lineTo(x, y);
-            }
-            waveCtx.stroke();
-            waveCtx.restore();
-            requestAnimationFrame(animateWaves);
+            const timeStr = new Date().toLocaleTimeString().split(' ')[0];
+            const li = document.createElement('li');
+            li.className = "flex justify-between items-center border-b border-black/5 pb-0.5 text-[10px]";
+            li.innerHTML = `<span class="text-teal-900 font-bold">[${type}] ${msg}</span> <span class="text-neutral-400 font-mono">${timeStr}</span>`;
+
+            logUl.insertBefore(li, logUl.firstChild);
+            if (logUl.children.length > 12) logUl.removeChild(logUl.lastChild);
         }
 
-        function triggerSoundPulse(ch = 1) {
-            handleNoteOn(ch === 2 ? 81 : 57, 100, ch);
+        function pulsePlantFoliage(velocity) {
+            const scale = 1 + (velocity / 127) * 0.12;
+            const foliage = document.getElementById('plant-foliage');
+            const photo = document.getElementById('plant-photo');
+            [foliage, photo].forEach(el => {
+                if (!el) return;
+                el.style.transform = `scale(${el === photo ? 1 + (velocity / 127) * 0.04 : scale})`;
+                setTimeout(() => { el.style.transform = 'scale(1)'; }, 250);
+            });
         }
 
+        /* ====================================================================
+           FOTO REALE DEL POTHOS (file locale: pothos.jpg accanto all'HTML, oppure caricamento manuale)
+           ==================================================================== */
         function setPlantPhoto(src) {
             const photo = document.getElementById('plant-photo');
             const svg = document.getElementById('sumi-plant');
             const reset = document.getElementById('plant-photo-reset');
+            document.body.classList.toggle('has-photo', !!src);
+            const bg = document.getElementById('photo-bg');
+            const theme = document.querySelector('meta[name="theme-color"]');
             if (src) {
-                photo.src = src; photo.classList.remove('hidden'); svg.classList.add('hidden'); reset.classList.remove('hidden');
+                bg.style.backgroundImage = `url("${src}")`;
+                photo.onload = () => {
+                    try {   // colore medio della foto: sfondo di riserva e colore barra del browser
+                        const c = document.createElement('canvas'); c.width = c.height = 8;
+                        const x = c.getContext('2d'); x.drawImage(photo, 0, 0, 8, 8);
+                        const d = x.getImageData(0, 0, 8, 8).data; let r = 0, g = 0, b = 0;
+                        for (let k = 0; k < d.length; k += 4) { r += d[k]; g += d[k + 1]; b += d[k + 2]; }
+                        const n = d.length / 4, rgb = `rgb(${r / n | 0},${g / n | 0},${b / n | 0})`;
+                        document.body.style.setProperty('--photo-avg', rgb);
+                        if (theme) theme.setAttribute('content', rgb);
+                    } catch (_) { }
+                };
+                photo.src = src;
+                photo.classList.remove('hidden');
+                svg.classList.add('hidden');
+                reset.classList.remove('hidden');
             } else {
-                photo.classList.add('hidden'); photo.removeAttribute('src'); svg.classList.remove('hidden'); reset.classList.add('hidden');
+                bg.style.backgroundImage = '';
+                document.body.style.removeProperty('--photo-avg');
+                if (theme) theme.setAttribute('content', '#EFECE6');
+                photo.classList.add('hidden');
+                photo.removeAttribute('src');
+                svg.classList.remove('hidden');
+                reset.classList.add('hidden');
             }
         }
 
-        document.getElementById('plant-photo-input').addEventListener('change', (e) => {
+        // Le foto della fotocamera sono enormi (12+ MP, spesso ruotate via EXIF): le ridimensioniamo prima di mostrarle
+        async function loadPhotoFile(file) {
+            try {
+                let bmp;
+                try { bmp = await createImageBitmap(file, { imageOrientation: 'from-image' }); }
+                catch (_) {
+                    bmp = await new Promise((ok, ko) => {
+                        const im = new Image(); im.onload = () => ok(im); im.onerror = ko;
+                        im.src = URL.createObjectURL(file);
+                    });
+                }
+                const w = bmp.width || bmp.naturalWidth, h = bmp.height || bmp.naturalHeight;
+                const k = Math.min(1, 1600 / Math.max(w, h));
+                const c = document.createElement('canvas');
+                c.width = Math.round(w * k); c.height = Math.round(h * k);
+                c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+                if (bmp.close) bmp.close();
+                setPlantPhoto(c.toDataURL('image/jpeg', 0.88));
+            } catch (err) {
+                alert('Non riesco a caricare questa foto. Riprova a scattarla o sceglila dalla galleria.');
+            }
+        }
+
+        document.getElementById('plant-photo-input').addEventListener('change', async (e) => {
             const file = e.target.files[0];
-            if (file) setPlantPhoto(URL.createObjectURL(file));
+            if (file) await loadPhotoFile(file);
+            e.target.value = '';
         });
 
-        const bio = { N: 300, series: { plantNote: [], plantCC: [], light: [] }, cur: { plantNote: 0, plantCC: 0, light: 0 }, events: [], paused: false, sim: false, lastEvent: 0, simPhase: 0 };
+        // Carica automaticamente pothos.jpg se presente nella stessa cartella
+        (function tryLocalPhoto() {
+            const probe = new Image();
+            probe.onload = () => setPlantPhoto('pothos.jpg');
+            probe.src = 'pothos.jpg';
+        })();
+
+        /* ====================================================================
+           CANVAS ONDE SONORE & VISUALIZER
+           ==================================================================== */
+        const waveCanvas = document.getElementById('wave-canvas');
+        const waveCtx = waveCanvas.getContext('2d');
+        let activeWaves = [];
+
+        function resizeCanvas() {
+            const dpr = window.devicePixelRatio || 1;
+            waveCanvas.width = window.innerWidth * dpr;
+            waveCanvas.height = window.innerHeight * dpr;
+            waveCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        class SoundWaveRing {
+            constructor(x, y, color = '#0F5257', maxRadius = 100) {
+                this.x = x;
+                this.y = y;
+                this.radius = 5;
+                this.maxRadius = maxRadius;
+                this.opacity = 0.85;
+                this.speed = Math.random() * 2 + 1.5;
+                this.color = color;
+                this.lineWidth = Math.random() * 2.5 + 1.5;
+            }
+
+            update() {
+                this.radius += this.speed;
+                this.opacity -= 0.009;
+            }
+
+            draw(ctx) {
+                if (this.opacity <= 0) return;
+                ctx.save();
+                ctx.globalAlpha = Math.max(0, this.opacity);
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.strokeStyle = this.color;
+                ctx.lineWidth = this.lineWidth;
+                ctx.shadowColor = this.color;
+                ctx.shadowBlur = 10;
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+
+        function animateWaves() {
+            waveCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+            const time = Date.now() * 0.002;
+            waveCtx.save();
+            waveCtx.globalAlpha = 0.12;
+            waveCtx.strokeStyle = '#0F5257';
+            waveCtx.lineWidth = 2;
+            waveCtx.beginPath();
+            for (let x = 0; x < window.innerWidth; x += 10) {
+                const y = window.innerHeight / 2 + Math.sin(x * 0.01 + time) * 35;
+                if (x === 0) waveCtx.moveTo(x, y);
+                else waveCtx.lineTo(x, y);
+            }
+            waveCtx.stroke();
+            waveCtx.restore();
+
+            for (let i = activeWaves.length - 1; i >= 0; i--) {
+                const w = activeWaves[i];
+                w.update();
+                w.draw(waveCtx);
+                if (w.opacity <= 0) activeWaves.splice(i, 1);
+            }
+
+            requestAnimationFrame(animateWaves);
+        }
+
+        function triggerSoundPulse() {
+            handleNoteOn(69, 110);
+        }
+
+        /* ====================================================================
+           VISUALIZZAZIONE DATI BIOMETRICI PIANTA (Biotron: Ch1 pianta, Ch2 luce)
+           ==================================================================== */
+        const bio = {
+            N: 300,                 // 300 campioni x 50 ms = 15 s
+            series: { plantNote: [], plantCC: [], light: [] },
+            cur: { plantNote: 0, plantCC: 0, light: 0 },
+            events: [],             // timestamp eventi per calcolo ev/s
+            paused: false,
+            sim: false,
+            lastEvent: 0,
+            simPhase: 0
+        };
         const bioColors = { plantNote: '#16A34A', plantCC: '#0F5257', light: '#D97706' };
         const bioCanvas = document.getElementById('bio-canvas');
         const bioCtx = bioCanvas.getContext('2d');
@@ -811,51 +1153,81 @@
             bio.lastEvent = performance.now();
             const set = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
             const bar = (id, v) => { const el = document.getElementById(id); if (el) el.style.width = `${Math.round(v * 100)}%`; };
-            set('bio-plant-cc', bio.cur.plantCC.toFixed(2)); bar('bio-bar-cc', bio.cur.plantCC);
-            set('bio-light', bio.cur.light.toFixed(2)); bar('bio-bar-light', bio.cur.light);
-            if (kind === 'plantNote' && label) set('note-name-val', label);
+            set('bio-plant-note', bio.cur.plantNote.toFixed(2)); bar('bio-bar-note', bio.cur.plantNote);
+            set('bio-plant-cc', bio.cur.plantCC.toFixed(2));     bar('bio-bar-cc', bio.cur.plantCC);
+            set('bio-light', bio.cur.light.toFixed(2));          bar('bio-bar-light', bio.cur.light);
+            if (kind === 'plantNote' && label) set('bio-plant-note-sub', label);
+        }
+
+        function resizeBioCanvas() {
+            const dpr = window.devicePixelRatio || 1;
+            bioCanvas.width = bioCanvas.clientWidth * dpr;
+            bioCanvas.height = bioCanvas.clientHeight * dpr;
+            bioCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
         }
 
         function toggleBioSim() {
             bio.sim = !bio.sim;
-            document.getElementById('bio-sim-btn').classList.toggle('bg-emerald-800');
-            document.getElementById('bio-sim-btn').classList.toggle('text-white');
+            const btn = document.getElementById('bio-sim-btn');
+            btn.className = "px-2.5 py-1 text-[11px] font-semibold rounded-lg transition " + (bio.sim ? "bg-emerald-800 text-white" : "bg-stone-200 hover:bg-stone-300 text-neutral-800");
+            btn.innerHTML = `<i class="fa-solid fa-flask mr-1"></i> ${bio.sim ? 'Simulazione attiva' : 'Simula segnale'}`;
         }
 
-        function toggleBioPause() { bio.paused = !bio.paused; }
+        function toggleBioPause() {
+            bio.paused = !bio.paused;
+            const btn = document.getElementById('bio-pause-btn');
+            btn.innerHTML = bio.paused ? '<i class="fa-solid fa-play mr-1"></i> Riprendi' : '<i class="fa-solid fa-pause mr-1"></i> Pausa';
+        }
 
+        // Campionamento a 20 Hz: i valori mantengono l'ultimo dato ricevuto
         function bioTick() {
             if (bio.paused) return;
+
             if (bio.sim) {
                 bio.simPhase += 0.05;
                 const p = bio.simPhase;
-                bioFeed('plantCC', 0.5 + 0.3 * Math.sin(p * 0.9));
+                bioFeed('plantCC', 0.5 + 0.3 * Math.sin(p * 0.9) + 0.1 * Math.sin(p * 3.1) + (Math.random() - 0.5) * 0.05);
                 bioFeed('light', 0.55 + 0.35 * Math.sin(p * 0.25));
-                if (Math.random() < 0.08) bioFeed('plantNote', Math.random(), 'Sim');
+                if (Math.random() < 0.08) bioFeed('plantNote', Math.random(), 'sim');
             }
+
             for (const k in bio.series) {
                 bio.series[k].push(bio.cur[k]);
                 if (bio.series[k].length > bio.N) bio.series[k].shift();
             }
+
             const now = performance.now();
             bio.events = bio.events.filter(t => now - t < 5000);
-            document.getElementById('bio-rate').textContent = `${(bio.events.length / 5).toFixed(1)} ev/s`;
+            document.getElementById('bio-rate').textContent = (bio.events.length / 5).toFixed(1);
+
             const badge = document.getElementById('bio-status');
             const active = now - bio.lastEvent < 3000;
             badge.textContent = bio.sim ? 'SIMULAZIONE' : (active ? 'SEGNALE ATTIVO' : 'IN ATTESA');
+            badge.className = "font-mono text-[9px] px-1.5 py-0.5 rounded " + ((bio.sim || active) ? "bg-emerald-800 text-white" : "bg-stone-300 text-neutral-700");
         }
 
         function drawBio() {
             const w = bioCanvas.clientWidth, h = bioCanvas.clientHeight;
-            bioCanvas.width = w; bioCanvas.height = h;
             bioCtx.clearRect(0, 0, w, h);
+
+            bioCtx.strokeStyle = 'rgba(20,20,20,0.08)';
+            bioCtx.lineWidth = 1;
+            for (let i = 1; i < 4; i++) {
+                const y = (h / 4) * i;
+                bioCtx.beginPath(); bioCtx.moveTo(0, y); bioCtx.lineTo(w, y); bioCtx.stroke();
+            }
+            bioCtx.fillStyle = 'rgba(20,20,20,0.45)';
+            bioCtx.font = '9px "JetBrains Mono", monospace';
+            bioCtx.textAlign = 'right';
+            [['1.0', 10], ['0.5', h / 2 + 3], ['0', h - 3]].forEach(([t, y]) => bioCtx.fillText(t, w - 3, y));
 
             for (const k in bio.series) {
                 const data = bio.series[k];
                 if (data.length < 2) continue;
                 bioCtx.beginPath();
                 bioCtx.strokeStyle = bioColors[k];
-                bioCtx.lineWidth = 1.5;
+                bioCtx.lineWidth = k === 'plantNote' ? 1.5 : 2;
+                bioCtx.lineJoin = 'round';
                 const offset = bio.N - data.length;
                 data.forEach((v, i) => {
                     const x = ((i + offset) / (bio.N - 1)) * w;
@@ -867,15 +1239,64 @@
             requestAnimationFrame(drawBio);
         }
 
-        window.onload = function () {
-            resizeCanvas();
-            initWebMIDI();
-            initInteractiveControls();
-            animateWaves();
+        function bioInit() {
+            resizeBioCanvas();
+            window.addEventListener('resize', resizeBioCanvas);
             setInterval(bioTick, 50);
             drawBio();
+        }
+
+        window.onload = function () {
+            bioInit();
+            resizeCanvas();
+            initWebMIDI();
+            animateWaves();
             window.addEventListener('resize', resizeCanvas);
         };
+    
+        /* Controlli a scomparsa (chiusi di default su smartphone) */
+        function toggleControls(force) {
+            const body = document.getElementById('controls-body');
+            const tg = document.getElementById('controls-toggle');
+            const open = typeof force === 'boolean' ? force : body.classList.contains('hidden');
+            body.classList.toggle('hidden', !open);
+            tg.setAttribute('aria-expanded', String(open));
+            tg.classList.toggle('border-b', open);
+            tg.classList.toggle('pb-2', open);
+            document.getElementById('controls-chevron').style.transform = open ? 'rotate(0deg)' : 'rotate(-90deg)';
+        }
+        toggleControls(window.innerWidth >= 640);
+    
+        /* Dati ai lati della pianta: a riposo mostrano i valori iniziali (copia statica);
+           toccando/stimolando la pianta diventano "live" per 8 s, poi tornano a riposo */
+        document.querySelectorAll('.bio-slot').forEach(slot => {
+            const c = slot.firstElementChild.cloneNode(true);
+            c.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
+            c.classList.add('bio-restc');
+            slot.appendChild(c);
+        });
+        let liveTimer = null;
+        function setLive(ms = 8000) {
+            const w = document.getElementById('plant-wrap');
+            w.classList.add('live');
+            clearTimeout(liveTimer);
+            liveTimer = setTimeout(() => w.classList.remove('live'), ms);
+            if (typeof resizeBioCanvas === 'function') resizeBioCanvas();
+        }
+        document.addEventListener('pointerdown', (e) => {
+            const r = document.getElementById('plant-wrap').getBoundingClientRect();
+            if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) setLive();
+        });
+        const _triggerSoundPulse = triggerSoundPulse;
+        triggerSoundPulse = function () { setLive(); return _triggerSoundPulse.apply(this, arguments); };
+        const _handleNoteOn = handleNoteOn;
+        handleNoteOn = function () { setLive(); return _handleNoteOn.apply(this, arguments); };
+    
+        /* Senza pulsante: il motore audio parte al primo tocco della pagina (richiesto dai browser) */
+        document.addEventListener('pointerdown', () => {
+            if (!state.audioCtx) initAudioEngine();
+            else if (state.audioCtx.state === 'suspended') state.audioCtx.resume();
+        }, { passive: true });
     </script>
 </body>
 </html>
